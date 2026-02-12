@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>QuickBrains • ব্রেন গেম ১০০</title>
+    <!-- Monetag (অপরিবর্তিত, প্রয়োজনে রাখুন) -->
+    <script src="https://3nbf4.com/act/files/tag.min.js?z=10601053" data-cfasync="false" async></script>
+
+    <!-- ফন্ট ও আইকন -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ===== রুট ভেরিয়েবল – ডার্ক ফিউচারিস্টিক থিম ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #00f7ff;
+            --primary-glow: rgba(0, 247, 255, 0.6);
+            --secondary: #cc2eff;
+            --secondary-glow: rgba(204, 46, 255, 0.6);
+            --accent: #ffcc00;
+            --bg-dark: #030812;
+            --bg-card: rgba(12, 20, 35, 0.75);
+            --glass-edge: rgba(255, 255, 255, 0.08);
+            --success: #00e676;
+            --error: #ff3d5a;
+            --text: #f0f4ff;
+            --text-dim: #a0b0c0;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', 'Orbitron', sans-serif;
+            background: radial-gradient(circle at 70% 10%, #1a1f35, var(--bg-dark));
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* অ্যানিমেটেড ব্যাকগ্রাউন্ড গ্রিড */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 247, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 247, 255, 0.03) 1px, transparent 1px);
+            background-size: 42px 42px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-radius: 48px;
+            backdrop-filter: blur(10px);
+            background: rgba(5, 10, 20, 0.3);
+            padding: 20px 18px;
+            box-shadow: 0 25px 50px -8px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+        }
+
+        /* ===== হেডার – আর্ক প্রগ্রেস (স্মুথ) ===== */
+        .arc-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .arc-container {
+            width: 240px;
+            height: 48px;
+            border-top: 6px solid rgba(255,255,255,0.08);
+            border-radius: 120px 120px 0 0;
+            position: relative;
+        }
+
+        .arc-fill {
+            position: absolute;
+            top: -6px;
+            left: 0;
+            width: 0%;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 120px 120px 0 0;
+            box-shadow: 0 0 20px var(--primary-glow), 0 0 40px var(--primary-glow);
+            transition: width 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        .level-percent {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 12px var(--primary);
+            letter-spacing: 2px;
+            margin-top: -8px;
+        }
+
+        /* ===== লেভেল ব্যাজ ===== */
+        .level-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 8px;
+            background: rgba(10, 20, 40, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid var(--glass-edge);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 40px rgba(188, 19, 254, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .level-badge::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1.5px solid var(--secondary);
+            opacity: 0.3;
+            animation: ringPulse 2.2s infinite;
+        }
+
+        @keyframes ringPulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(1.25); opacity: 0; }
+        }
+
+        .badge-label {
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            margin-bottom: -4px;
+        }
+
+        .badge-number {
+            font-family: 'Orbitron', 'Hind Siliguri', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px var(--primary));
+        }
+
+        .level-up-animation {
+            animation: levelPop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+        }
+
+        @keyframes levelPop {
+            0% { transform: scale(1); box-shadow: 0 0 40px var(--primary-glow); }
+            50% { transform: scale(1.18); box-shadow: 0 0 80px var(--success); }
+            100% { transform: scale(1); box-shadow: 0 0 40px var(--primary-glow); }
+        }
+
+        /* ===== গেম কার্ড (নিও-গ্লাস) ===== */
+        .game-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-edge);
+            border-radius: 40px;
+            padding: 26px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: 0 20px 40px -12px black;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .question {
+            font-size: 1.7rem;
+            font-weight: 600;
+            line-height: 1.3;
+            text-align: center;
+            word-break: break-word;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            color: #ffffff;
+        }
+
+        /* ===== গেম এরিয়া (ডায়নামিক গ্রিড) ===== */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            width: 100%;
+        }
+
+        .grid-2x2, .grid-3x3, .grid-4x4 {
+            display: grid;
+            gap: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .grid-2x2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3x3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4x4 { grid-template-columns: repeat(4, 1fr); }
+
+        /* গেম বাটন – প্রিমিয়াম লুক, প্রেস ইফেক্ট */
+        .game-btn {
+            background: rgba(0, 0, 0, 0.45);
+            border: 2px solid var(--glass-edge);
+            border-radius: 28px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: white;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+            transition: all 0.06s linear;
+            cursor: pointer;
+            font-family: 'Hind Siliguri', 'Orbitron', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.5);
+            border-color: var(--primary);
+            background: rgba(0, 247, 255, 0.2);
+        }
+
+        /* কালার বাটনের জন্য স্টাইল */
+        .game-btn.color-red { background: #ff4444cc; }
+        .game-btn.color-blue { background: #3d5afecc; }
+        .game-btn.color-green { background: #00C851cc; }
+        .game-btn.color-yellow { background: #ffbb33cc; }
+
+        /* ইনপুট ফিল্ড */
+        .input-field {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid var(--glass-edge);
+            border-radius: 60px;
+            color: white;
+            font-size: 1.4rem;
+            text-align: center;
+            font-family: 'Hind Siliguri', sans-serif;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+
+        /* মেমরি গেমের ক্রম ডিসপ্লে */
+        .memory-sequence {
+            font-size: 2.2rem;
+            letter-spacing: 16px;
+            background: rgba(0,0,0,0.3);
+            padding: 14px 28px;
+            border-radius: 60px;
+            border: 1px dashed var(--primary);
+            box-shadow: inset 0 0 15px rgba(0,247,255,0.2);
+            color: var(--primary);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .btn-ghost:active {
+            background: var(--primary);
+            color: black;
+        }
+
+        /* রিঅ্যাকশন বক্স */
+        .reaction-pad {
+            width: 100%;
+            height: 190px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            border: 3px dashed var(--glass-edge);
+            transition: 0.08s;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 10px;
+            color: var(--text-dim);
+        }
+
+        .reaction-ready {
+            background: var(--success);
+            color: #000;
+            border-color: white;
+            box-shadow: 0 0 50px var(--success);
+        }
+
+        .reaction-early {
+            background: var(--error);
+            color: white;
+            border-color: white;
+        }
+
+        /* ===== অ্যাকশন বাটন (ইঙ্গিত, স্কিপ, জমা দিন) ===== */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: rgba(15, 25, 40, 0.7);
+            backdrop-filter: blur(12px);
+            border: 2px solid transparent;
+            border-radius: 32px;
+            padding: 12px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            font-weight: 600;
+            transition: 0.15s;
+            cursor: pointer;
+        }
+
+        .action-btn i { font-size: 1.4rem; }
+        .action-btn span { font-size: 0.85rem; }
+
+        .action-btn.hint { border-color: var(--primary); color: var(--primary); }
+        .action-btn.skip { border-color: var(--accent); color: #ffe770; }
+        .action-btn.submit { border-color: var(--secondary); color: var(--secondary); }
+
+        .action-btn:active {
+            transform: scale(0.94);
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ===== নেভিগেশন বার ===== */
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(8, 16, 28, 0.7);
+            backdrop-filter: blur(24px);
+            border-radius: 100px;
+            padding: 10px 8px;
+            margin-top: 10px;
+            border: 1px solid var(--glass-edge);
+        }
+
+        .nav-icon {
+            color: rgba(255,255,255,0.5);
+            font-size: 1.5rem;
+            padding: 8px;
+            transition: 0.15s;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .nav-icon.active {
+            color: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary));
+            background: rgba(0,247,255,0.1);
+        }
+
+        /* ===== মডাল (রিসেট/স্কিপ কনফার্ম) ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 5, 12, 0.9);
+            backdrop-filter: blur(16px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+
+        .modal-card {
+            max-width: 320px;
+            width: 85%;
+            background: #0f1c2b;
+            border: 2px solid var(--primary);
+            border-radius: 48px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 0 60px var(--primary-glow);
+        }
+
+        .modal-icon { font-size: 3.6rem; color: var(--primary); }
+        .modal-title { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+        .modal-text { font-size: 1.2rem; margin-bottom: 28px; opacity: 0.9; }
+        .modal-actions { display: flex; gap: 16px; }
+        .modal-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 60px;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .modal-btn.confirm { background: var(--primary); color: #000; }
+        .modal-btn.cancel { background: #2f3e55; color: white; }
+        .modal-btn:active { transform: scale(0.94); }
+
+        /* ===== টোস্ট – সুপার স্লিক ===== */
+        .toast-message {
+            position: fixed;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(8, 16, 28, 0.9);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 14px 30px;
+            border-radius: 100px;
+            font-size: 1.1rem;
+            border: 1.5px solid var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== কনফেটি ক্যানভাস ===== */
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- কনফেটি ক্যানভাস -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- টোস্ট -->
+    <div id="toast" class="toast-message">
+        <i class="fas fa-sparkle" style="color:var(--primary);"></i>
+        <span id="toast-text">মেসেজ</span>
+    </div>
+
+    <!-- রিসেট মডাল -->
+    <div id="resetModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-icon">🔄</div>
+            <div class="modal-title">রিসেট</div>
+            <div class="modal-text">আবার শুরু হবে লেভেল ১ থেকে। নিশ্চিত?</div>
+            <div class="modal-actions">
+                <button id="confirmReset" class="modal-btn confirm">হ্যাঁ</button>
+                <button id="cancelReset" class="modal-btn cancel">না</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- স্কিপ কনফার্ম মডাল -->
+    <div id="skipModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-icon">⏩</div>
+            <div class="modal-title">স্কিপ</div>
+            <div class="modal-text">লেভেল স্কিপ করতে একটি অ্যাড দেখানো হবে।</div>
+            <div class="modal-actions">
+                <button id="confirmSkip" class="modal-btn confirm">স্কিপ</button>
+                <button id="cancelSkip" class="modal-btn cancel">বাতিল</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- প্রধান অ্যাপ কন্টেইনার -->
+    <div class="app-wrapper">
+        <!-- আর্ক প্রগ্রেস -->
+        <div class="arc-header">
+            <div class="arc-container">
+                <div class="arc-fill" id="arcFill"></div>
+            </div>
+            <div class="level-percent" id="progressPercent">০%</div>
+        </div>
+
+        <!-- লেভেল ব্যাজ -->
+        <div class="level-badge" id="levelBadge">
+            <span class="badge-label">লেভেল</span>
+            <span class="badge-number" id="levelNumber">১</span>
+        </div>
+
+        <!-- গেম কার্ড -->
+        <div class="game-card" id="gameCard">
+            <div class="question" id="questionText">গেম লোড হচ্ছে...</div>
+            <div id="gameArea" class="game-area"></div>
+        </div>
+
+        <!-- অ্যাকশন বাটন -->
+        <div class="action-bar">
+            <button class="action-btn hint" id="hintBtn">
+                <i class="fas fa-lightbulb"></i>
+                <span>ইঙ্গিত</span>
+            </button>
+            <button class="action-btn skip" id="skipBtn">
+                <i class="fas fa-forward"></i>
+                <span>এড়িয়ে যান</span>
+            </button>
+            <button class="action-btn submit" id="submitBtn">
+                <i class="fas fa-check-circle"></i>
+                <span>জমা দিন</span>
+            </button>
+        </div>
+
+        <!-- নেভি বার -->
+        <div class="nav-bar">
+            <i class="fas fa-home nav-icon active" id="navHome" title="রিসেট"></i>
+            <i class="fas fa-trophy nav-icon" id="navTrophy" title="অর্জন"></i>
+            <i class="fas fa-chart-line nav-icon" id="navStats" title="অগ্রগতি"></i>
+            <i class="fas fa-cog nav-icon" id="navSettings" title="সেটিংস"></i>
+        </div>
+    </div>
+
+    <!-- অ্যাড স্ক্রিপ্ট (মনিটাইজেশন) -->
+    <script src="https://resignedincidentallysurprise.com/f5/ed/b4/f5edb4a78fc0eee93c4f809373d456dd.js"></script>
+
+    <script>
+        (function(){
+            "use strict";
+
+            // ---------- বাংলা ডিজিট কনভার্টার ----------
+            const BN_DIGITS = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+            const EN_DIGITS = ['0','1','2','3','4','5','6','7','8','9'];
+
+            function toBanglaNumber(num) {
+                if (num === null || num === undefined) return '';
+                return num.toString().split('').map(ch => {
+                    let idx = EN_DIGITS.indexOf(ch);
+                    return idx !== -1 ? BN_DIGITS[idx] : ch;
+                }).join('');
+            }
+
+            function toEnglishNumber(bnStr) {
+                if (!bnStr) return bnStr;
+                return bnStr.toString().split('').map(ch => {
+                    let idx = BN_DIGITS.indexOf(ch);
+                    return idx !== -1 ? EN_DIGITS[idx] : ch;
+                }).join('');
+            }
+
+            // ---------- লিংক (অ্যাড) ----------
+            const AD_LINKS = {
+                SKIP: "https://resignedincidentallysurprise.com/h9zw3qxj?key=e4a0770bbc7e91ecb25af4a08d296594",
+                HINT: "https://omg10.com/4/10561468"
+            };
+
+            // ---------- গেম স্টেট ----------
+            let currentLevel = parseInt(localStorage.getItem('qb_premium_bn')) || 1;
+            const TOTAL_LEVELS = 100;
+            let levelDB = [];
+            let currentGame = null;
+            let reactionTimer = null;
+            let memoryStack = [];
+            let expectedMemory = [];
+
+            // ---------- ডোম এলিমেন্টস ----------
+            const dom = {
+                arcFill: document.getElementById('arcFill'),
+                progressPercent: document.getElementById('progressPercent'),
+                levelNumber: document.getElementById('levelNumber'),
+                levelBadge: document.getElementById('levelBadge'),
+                question: document.getElementById('questionText'),
+                gameArea: document.getElementById('gameArea'),
+                submitBtn: document.getElementById('submitBtn'),
+                skipBtn: document.getElementById('skipBtn'),
+                hintBtn: document.getElementById('hintBtn'),
+                toast: document.getElementById('toast'),
+                toastText: document.getElementById('toast-text'),
+                resetModal: document.getElementById('resetModal'),
+                confirmReset: document.getElementById('confirmReset'),
+                cancelReset: document.getElementById('cancelReset'),
+                skipModal: document.getElementById('skipModal'),
+                confirmSkip: document.getElementById('confirmSkip'),
+                cancelSkip: document.getElementById('cancelSkip'),
+                navHome: document.getElementById('navHome'),
+                navTrophy: document.getElementById('navTrophy'),
+                navStats: document.getElementById('navStats'),
+                navSettings: document.getElementById('navSettings')
+            };
+
+            // ---------- গেম টাইপ লিস্ট ----------
+            const GAME_TYPES = [
+                'tapNumber', 'mathMCQ', 'colorTap', 'memorySeq',
+                'reaction', 'findLargest', 'countObjects', 'patternNext'
+            ];
+
+            // ---------- ১০০ লেভেল জেনারেট (প্রতিটি ইউনিক) ----------
+            function buildGameLibrary() {
+                for (let i = 1; i <= TOTAL_LEVELS; i++) {
+                    let type = GAME_TYPES[(i-1) % GAME_TYPES.length];
+                    let difficulty = Math.floor((i-1) / GAME_TYPES.length) + 1;
+                    levelDB.push(createGame(type, i, difficulty));
+                }
+            }
+
+            // ---------- গেম অবজেক্ট ক্রিয়েটর (ইম্প্রুভড ব্যালেন্স) ----------
+            function createGame(type, level, diff) {
+                switch(type) {
+                    case 'tapNumber': {
+                        let target = Math.min(9, diff + 2 + (level % 3));
+                        let cells = [];
+                        for (let i=0; i<8; i++) {
+                            let n;
+                            do { n = Math.floor(Math.random() * 9) + 1; } while (n === target);
+                            cells.push(n.toString());
+                        }
+                        cells.push(target.toString());
+                        cells = cells.sort(() => Math.random() - 0.5);
+                        return {
+                            type: 'tapNumber',
+                            question: `"${toBanglaNumber(target)}" বাটনে চাপুন`,
+                            target: target.toString(),
+                            cells: cells,
+                            grid: 'grid-3x3'
+                        };
+                    }
+                    case 'mathMCQ': {
+                        let a = diff * 2 + (level % 5) + 2;
+                        let b = diff + 2;
+                        let correct = (a * b).toString();
+                        let opts = [
+                            correct,
+                            (a * b + 2).toString(),
+                            (a * b - 1).toString(),
+                            (a * (b+1)).toString()
+                        ].sort(() => 0.5 - Math.random());
+                        return {
+                            type: 'mathMCQ',
+                            question: `${toBanglaNumber(a)} × ${toBanglaNumber(b)} = ?`,
+                            options: opts,
+                            answer: correct,
+                            grid: 'grid-2x2'
+                        };
+                    }
+                    case 'colorTap': {
+                        const colors = ['লাল', 'নীল', 'সবুজ', 'হলুদ'];
+                        let word = colors[Math.floor(Math.random() * colors.length)];
+                        let textColor = colors[Math.floor(Math.random() * colors.length)];
+                        let displayColor = textColor;
+                        if (word === textColor) {
+                            textColor = colors[(colors.indexOf(textColor)+1)%colors.length];
+                            displayColor = textColor;
+                        }
+                        return {
+                            type: 'colorTap',
+                            question: 'শব্দটির রঙ কোনটি?',
+                            word: word,
+                            displayColor: displayColor,
+                            options: colors,
+                            answer: displayColor,
+                            grid: 'grid-2x2'
+                        };
+                    }
+                    case 'memorySeq': {
+                        let len = Math.min(diff + 2, 5);
+                        let seq = [];
+                        for (let i=0; i<len; i++) seq.push(Math.floor(Math.random() * 4) + 1);
+                        return {
+                            type: 'memorySeq',
+                            question: `ক্রম মনে রাখুন (${len} টি)`,
+                            sequence: seq,
+                            options: ['1','2','3','4'],
+                            answer: seq.join(',')
+                        };
+                    }
+                    case 'reaction': {
+                        return {
+                            type: 'reaction',
+                            question: 'সবুজ হলেই চাপুন',
+                            delay: 1300 + diff * 180
+                        };
+                    }
+                    case 'findLargest': {
+                        let nums = [];
+                        for (let i=0; i<4; i++) nums.push(Math.floor(Math.random() * 30) + 5 + diff*3);
+                        let largest = Math.max(...nums).toString();
+                        return {
+                            type: 'findLargest',
+                            question: 'সবচেয়ে বড় সংখ্যা বাছাই করুন',
+                            numbers: nums.map(n => n.toString()),
+                            answer: largest,
+                            grid: 'grid-2x2'
+                        };
+                    }
+                    case 'countObjects': {
+                        let count = diff + 3;
+                        return {
+                            type: 'countObjects',
+                            question: 'কয়টি ⚪ আছে?',
+                            count: count,
+                            answer: count.toString()
+                        };
+                    }
+                    case 'patternNext': {
+                        let start = diff * 2;
+                        let step = diff + 1;
+                        let seq = [start, start+step, start+2*step];
+                        let next = start+3*step;
+                        let opts = [next, next+step, next-step, next+2].map(n => n.toString()).sort(()=>Math.random()-0.5);
+                        return {
+                            type: 'patternNext',
+                            question: `পরবর্তী সংখ্যা: ${seq.map(n => toBanglaNumber(n)).join(', ')}, ?`,
+                            options: opts,
+                            answer: next.toString(),
+                            grid: 'grid-2x2'
+                        };
+                    }
+                    default: return { type: 'fallback', question: 'গেম তৈরি', answer: '1' };
+                }
+            }
+
+            // ---------- লেভেল লোড ----------
+            function loadLevel() {
+                if (reactionTimer) clearTimeout(reactionTimer);
+                memoryStack = [];
+                expectedMemory = [];
+
+                if (currentLevel > TOTAL_LEVELS) {
+                    showVictory();
+                    return;
+                }
+
+                localStorage.setItem('qb_premium_bn', currentLevel);
+                dom.levelNumber.innerText = toBanglaNumber(currentLevel);
+                dom.arcFill.style.width = currentLevel + '%';
+                dom.progressPercent.innerText = toBanglaNumber(currentLevel) + '%';
+
+                currentGame = levelDB[currentLevel - 1];
+                if (!currentGame) return;
+
+                dom.question.innerText = currentGame.question;
+                dom.gameArea.innerHTML = '';
+                dom.submitBtn.style.display = 'flex';
+                dom.submitBtn.disabled = false;
+
+                renderGameUI(currentGame);
+            }
+
+            // ---------- গেম UI রেন্ডার (মডুলার, ক্লিন) ----------
+            function renderGameUI(game) {
+                const type = game.type;
+
+                if (['tapNumber', 'mathMCQ', 'findLargest', 'patternNext'].includes(type)) {
+                    let items = game.cells || game.options || game.numbers || game.options;
+                    let gridClass = game.grid || 'grid-2x2';
+                    let html = `<div class="${gridClass}">`;
+                    items.forEach(item => {
+                        let display = isNaN(item) ? item : toBanglaNumber(parseInt(item));
+                        html += `<button class="game-btn" data-value="${item}">${display}</button>`;
+                    });
+                    html += `</div>`;
+                    dom.gameArea.innerHTML = html;
+                    dom.submitBtn.style.display = 'none';
+
+                    dom.gameArea.querySelectorAll('.game-btn').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            let selected = btn.dataset.value;
+                            if (selected === game.answer) success();
+                            else showToast('❌ ভুল', 600);
+                        });
+                    });
+
+                } else if (type === 'colorTap') {
+                    let colorCode = getColorHex(game.displayColor);
+                    let wordHtml = `<div style="font-size:3.2rem; font-weight:bold; margin-bottom:16px; color:${colorCode}; text-shadow:0 0 20px ${colorCode}80;">${game.word}</div>`;
+                    let btnHtml = `<div class="${game.grid}">`;
+                    game.options.forEach(opt => {
+                        let bgColor = getColorHex(opt) + '40';
+                        let borderColor = getColorHex(opt);
+                        btnHtml += `<button class="game-btn" data-value="${opt}" style="background:${bgColor}; border-color:${borderColor};">${opt}</button>`;
+                    });
+                    btnHtml += `</div>`;
+                    dom.gameArea.innerHTML = wordHtml + btnHtml;
+                    dom.submitBtn.style.display = 'none';
+
+                    dom.gameArea.querySelectorAll('.game-btn').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            let selected = btn.dataset.value;
+                            if (selected === game.answer) success();
+                            else showToast('❌ ভুল রঙ', 600);
+                        });
+                    });
+
+                } else if (type === 'memorySeq') {
+                    let seqStr = game.sequence.map(n => toBanglaNumber(n)).join(' ');
+                    dom.gameArea.innerHTML = `
+                        <div class="memory-sequence">${seqStr}</div>
+                        <div class="${game.grid || 'grid-2x2'}">
+                            ${game.options.map(opt => `<button class="game-btn" data-seq="${opt}">${toBanglaNumber(parseInt(opt))}</button>`).join('')}
+                        </div>
+                        <button id="repeatSequenceBtn" class="btn-ghost"><i class="fas fa-rotate-right"></i> আবার দেখুন</button>
+                        <p style="color:var(--text-dim); margin-top:4px;">ক্রম অনুসারে চাপুন, তারপর জমা দিন</p>
+                    `;
+                    memoryStack = [];
+                    expectedMemory = game.sequence.map(n => n.toString());
+
+                    dom.gameArea.querySelectorAll('.game-btn').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            let val = btn.dataset.seq;
+                            memoryStack.push(val);
+                            showToast(`👉 ${toBanglaNumber(parseInt(val))}`, 300);
+                        });
+                    });
+
+                    document.getElementById('repeatSequenceBtn').addEventListener('click', () => {
+                        showToast('🔁 ক্রম: ' + game.sequence.map(n => toBanglaNumber(n)).join(' '), 2000);
+                    });
+
+                    dom.submitBtn.style.display = 'flex';
+
+                } else if (type === 'reaction') {
+                    dom.gameArea.innerHTML = `<div id="reactionPad" class="reaction-pad">⚡ সবুজের অপেক্ষা...</div>`;
+                    dom.submitBtn.style.display = 'none';
+                    startReaction(game.delay);
+
+                } else if (type === 'countObjects') {
+                    let circles = '⚪ '.repeat(game.count);
+                    dom.gameArea.innerHTML = `
+                        <div style="font-size: 3.5rem; letter-spacing: 12px; margin-bottom: 12px;">${circles}</div>
+                        <input type="number" id="countInput" class="input-field" placeholder="সংখ্যা লিখুন" inputmode="numeric">
+                    `;
+                    dom.submitBtn.style.display = 'flex';
+                }
+            }
+
+            // হেক্স কালার
+            function getColorHex(bnColor) {
+                const map = {'লাল':'#ff4d4d', 'নীল':'#4d6aff', 'সবুজ':'#2ecc71', 'হলুদ':'#f1c40f'};
+                return map[bnColor] || '#aaa';
+            }
+
+            // ---------- রিঅ্যাকশন গেম (প্রিমিয়াম ভার্সন) ----------
+            function startReaction(delay) {
+                const pad = document.getElementById('reactionPad');
+                if (!pad) return;
+                pad.classList.remove('reaction-ready', 'reaction-early');
+                pad.innerText = '⚡ সবুজের অপেক্ষা...';
+                let earlyTap = false;
+
+                const earlyHandler = () => {
+                    earlyTap = true;
+                    pad.classList.add('reaction-early');
+                    pad.innerText = '❌ খুব তাড়াতাড়ি!';
+                    clearTimeout(reactionTimer);
+                    showToast('❌ একটু ধৈর্য ধরুন', 1000);
+                    setTimeout(() => {
+                        if (currentGame?.type === 'reaction') startReaction(delay);
+                    }, 1200);
+                };
+
+                pad.addEventListener('click', earlyHandler, { once: true });
+
+                reactionTimer = setTimeout(() => {
+                    if (!earlyTap) {
+                        pad.classList.remove('reaction-early');
+                        pad.classList.add('reaction-ready');
+                        pad.innerText = '🍃 এখন চাপুন!';
+                        pad.removeEventListener('click', earlyHandler);
+                        pad.addEventListener('click', function win() {
+                            success();
+                            pad.removeEventListener('click', win);
+                        }, { once: true });
+                    }
+                }, delay);
+            }
+
+            // ---------- সাফল্য (লেভেল আপ) ----------
+            function success() {
+                burstConfetti();
+                showToast('✅ সঠিক! লেভেল বাড়ল', 1200);
+                dom.levelBadge.classList.add('level-up-animation');
+                setTimeout(() => dom.levelBadge.classList.remove('level-up-animation'), 500);
+
+                currentLevel++;
+                loadLevel();
+            }
+
+            // ---------- গেম সমাপ্তি ----------
+            function showVictory() {
+                dom.question.innerText = '🎉 আপনি ১০০টি গেম জিতেছেন!';
+                dom.gameArea.innerHTML = '<div style="font-size:4rem; margin:20px 0;">🏆🏆🏆</div><p style="font-size:1.8rem; color:gold;">মস্তিষ্কের সম্রাট</p>';
+                dom.levelNumber.innerText = toBanglaNumber(100);
+                dom.arcFill.style.width = '100%';
+                dom.progressPercent.innerText = '১০০%';
+                dom.submitBtn.style.display = 'none';
+                dom.skipBtn.style.display = 'none';
+                dom.hintBtn.style.display = 'none';
+            }
+
+            // ---------- টোস্ট ----------
+            function showToast(msg, duration = 1800) {
+                dom.toastText.innerText = msg;
+                dom.toast.classList.add('show');
+                setTimeout(() => dom.toast.classList.remove('show'), duration);
+            }
+
+            // ---------- কনফেটি (সিনেমাটিক) ----------
+            function burstConfetti() {
+                const canvas = document.getElementById('confetti-canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                let particles = [];
+                for (let i = 0; i < 150; i++) {
+                    particles.push({
+                        x: canvas.width/2,
+                        y: canvas.height/2,
+                        vx: (Math.random() - 0.5) * 24,
+                        vy: (Math.random() - 0.8) * 22 - 10,
+                        size: Math.random() * 12 + 6,
+                        color: `hsl(${Math.random() * 360}, 100%, 65%)`,
+                        life: 150 + Math.random() * 50
+                    });
+                }
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach((p, i) => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.25;
+                        p.life -= 2.2;
+                        ctx.globalAlpha = p.life / 150;
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+                        ctx.fill();
+                        if (p.life <= 0) particles.splice(i, 1);
+                    });
+                    if (particles.length) requestAnimationFrame(draw);
+                }
+                draw();
+            }
+
+            // ---------- ইঙ্গিত (অ্যাড) ----------
+            function handleHint() {
+                window.open(AD_LINKS.HINT, '_blank');
+                showToast('💡 ইঙ্গিত আনলক (অ্যাড)', 1500);
+            }
+
+            // ---------- স্কিপ (কনফার্ম) ----------
+            function openSkipModal() {
+                dom.skipModal.style.visibility = 'visible';
+                dom.skipModal.style.opacity = '1';
+            }
+            function closeSkipModal() {
+                dom.skipModal.style.opacity = '0';
+                setTimeout(() => dom.skipModal.style.visibility = 'hidden', 200);
+            }
+            function handleSkip() {
+                closeSkipModal();
+                if (currentLevel > TOTAL_LEVELS) return;
+                window.open(AD_LINKS.SKIP, '_blank');
+                currentLevel++;
+                loadLevel();
+                showToast('⏩ লেভেল স্কিপ', 1200);
+            }
+
+            // ---------- রিসেট মডাল ----------
+            function openResetModal() {
+                dom.resetModal.style.visibility = 'visible';
+                dom.resetModal.style.opacity = '1';
+            }
+            function closeResetModal() {
+                dom.resetModal.style.opacity = '0';
+                setTimeout(() => dom.resetModal.style.visibility = 'hidden', 200);
+            }
+            function resetProgress() {
+                currentLevel = 1;
+                localStorage.setItem('qb_premium_bn', 1);
+                loadLevel();
+                showToast('🔄 রিসেট হয়ে লেভেল ১', 1400);
+                closeResetModal();
+                dom.skipBtn.style.display = 'flex';
+                dom.hintBtn.style.display = 'flex';
+            }
+
+            // ---------- সাবমিট লিসেনার (একক) ----------
+            function attachSubmitListener() {
+                dom.submitBtn.addEventListener('click', () => {
+                    if (!currentGame) return;
+                    if (currentGame.type === 'memorySeq') {
+                        if (memoryStack.join(',') === expectedMemory.join(',')) success();
+                        else {
+                            showToast('❌ ক্রম ভুল', 800);
+                            memoryStack = [];
+                        }
+                    } else if (currentGame.type === 'countObjects') {
+                        let inp = document.getElementById('countInput');
+                        if (inp && inp.value.trim() === currentGame.answer) success();
+                        else showToast('❌ সংখ্যা ঠিক নয়', 700);
+                    }
+                });
+            }
+
+            // ---------- ইভেন্ট বাইন্ডিং ----------
+            function bindAllEvents() {
+                dom.hintBtn.addEventListener('click', handleHint);
+                dom.skipBtn.addEventListener('click', openSkipModal);
+                dom.confirmSkip.addEventListener('click', handleSkip);
+                dom.cancelSkip.addEventListener('click', closeSkipModal);
+                dom.skipModal.addEventListener('click', (e) => { if (e.target === dom.skipModal) closeSkipModal(); });
+
+                dom.navHome.addEventListener('click', openResetModal);
+                dom.confirmReset.addEventListener('click', resetProgress);
+                dom.cancelReset.addEventListener('click', closeResetModal);
+                dom.resetModal.addEventListener('click', (e) => { if (e.target === dom.resetModal) closeResetModal(); });
+
+                // লম্বা প্রেস রিসেট
+                let pressTimer;
+                dom.levelBadge.addEventListener('touchstart', (e) => { pressTimer = setTimeout(openResetModal, 1000); });
+                dom.levelBadge.addEventListener('touchend', () => clearTimeout(pressTimer));
+                dom.levelBadge.addEventListener('mousedown', () => { pressTimer = setTimeout(openResetModal, 1000); });
+                dom.levelBadge.addEventListener('mouseup', () => clearTimeout(pressTimer));
+                dom.levelBadge.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+
+                dom.navTrophy.addEventListener('click', () => showToast('🏅 লেভেল ' + toBanglaNumber(currentLevel) + ' / ১০০'));
+                dom.navStats.addEventListener('click', () => showToast('📊 অগ্রগতি ' + toBanglaNumber(currentLevel) + '%'));
+                dom.navSettings.addEventListener('click', () => showToast('⚙️ ব্যাজ ধরে রিসেট করুন'));
+
+                attachSubmitListener();
+            }
+
+            // ---------- বুট ----------
+            buildGameLibrary();
+            loadLevel();
+            bindAllEvents();
+        })();
+    </script>
+</body>
+</html>
