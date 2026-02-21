@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quick Brain – Game of Your Brain</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- User Scripts (Ads/Monetization) -->
+  <script src="https://resignedincidentallysurprise.com/f5/ed/b4/f5edb4a78fc0eee93c4f809373d456dd.js"></script>
+  <script src="https://5gvci.com/act/files/tag.min.js?z=10601053" data-cfasync="false" async></script>
+  
+  <style>
+    :root {
+      --bg-color: #74b9ff;
+      --text-color: #2d3436;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --btn-primary: #6c5ce7;
+      --font-main: 'Fredoka', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden; /* No scroll */
+      transition: background 0.6s ease;
+    }
+
+    /* Live Background */
+    #live-bg {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 1; pointer-events: none; overflow: hidden;
+    }
+
+    .particle {
+      position: absolute; font-size: 2.5rem;
+      animation: floatUp 15s linear infinite; opacity: 0.6;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    #confetti {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* App Container */
+    .app {
+      width: 95%; max-width: 500px;
+      height: 90vh; /* Consistent height */
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Splash Screen */
+    #splash-screen {
+      display: flex; flex-direction: column; align-items: center;
+      width: 100%; text-align: center;
+    }
+
+    .mascot {
+      font-size: 6rem; margin-bottom: 20px;
+      animation: bounce 2s infinite;
+      filter: drop-shadow(0 10px 0 rgba(0,0,0,0.1));
+    }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+    h1 { font-size: 3rem; color: #fff; text-shadow: 2px 2px 0 rgba(0,0,0,0.2); margin-bottom: 10px; }
+    
+    .btn-main {
+      background: #ff6b6b; border: 4px solid #fff; color: white;
+      font-size: 2rem; padding: 15px 50px; border-radius: 50px;
+      box-shadow: 0 8px 0 #ee5253; cursor: pointer; margin-top: 30px;
+      transition: transform 0.1s;
+    }
+    .btn-main:active { transform: translateY(8px); box-shadow: none; }
+
+    /* Game Screen */
+    #game-screen { display: none; width: 100%; height: 100%; flex-direction: column; }
+
+    /* Top Bar */
+    .top-header {
+      display: flex; justify-content: space-between; align-items: center;
+      width: 100%; margin-bottom: 30px;
+    }
+
+    .stats-box {
+      display: flex; gap: 10px;
+    }
+    
+    .badge {
+      background: #fff; padding: 8px 15px; border-radius: 20px;
+      font-weight: 700; font-size: 1.2rem; color: #2d3436;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px;
+    }
+    .badge i { color: #f1c40f; }
+
+    .menu-btn {
+      background: rgba(255,255,255,0.3); border: 2px solid #fff;
+      width: 45px; height: 45px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; color: #fff; cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+    }
+    .menu-btn:active { transform: translateY(4px); box-shadow: none; }
+
+    /* Quiz Card */
+    .quiz-container {
+      background: var(--card-bg); width: 100%; padding: 40px 20px;
+      border-radius: 30px; text-align: center;
+      box-shadow: 0 15px 0 rgba(0,0,0,0.1);
+      border: 4px solid #fff;
+      margin-top: auto; margin-bottom: auto;
+      position: relative;
+    }
+
+    .question-display {
+      font-size: 4rem; font-weight: 800; color: #2d3436;
+      margin-bottom: 30px; letter-spacing: 2px;
+      display: flex; justify-content: center; gap: 10px;
+    }
+
+    .input-area { display: flex; justify-content: center; gap: 10px; }
+
+    #answerInput {
+      width: 140px; height: 70px; font-size: 3rem; text-align: center;
+      border: 4px solid #dfe6e9; border-radius: 20px; outline: none;
+      color: #2d3436; font-weight: 700; background: #f1f2f6;
+    }
+    #answerInput:focus { border-color: #6c5ce7; background: #fff; }
+
+    #submitBtn {
+      width: 70px; height: 70px; background: #00b894; border: none;
+      border-radius: 20px; color: white; font-size: 2rem;
+      box-shadow: 0 6px 0 #009432; cursor: pointer;
+    }
+    #submitBtn:active { transform: translateY(6px); box-shadow: none; }
+
+    /* MODAL SYSTEM (Pop-ups) */
+    .modal-backdrop {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+      z-index: 100; display: none; align-items: center; justify-content: center;
+      border-radius: 28px; /* Match app border */
+      animation: fadeIn 0.2s ease;
+    }
+    .modal-backdrop.active { display: flex; }
+
+    .modal-card {
+      background: #fff; width: 90%; max-height: 80%;
+      border-radius: 25px; padding: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      border: 4px solid #74b9ff;
+      display: flex; flex-direction: column;
+      animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 15px; border-bottom: 2px solid #f1f2f6; padding-bottom: 10px;
+    }
+    .modal-title { font-size: 1.8rem; font-weight: 800; color: #2d3436; }
+    .close-btn {
+      background: #ff7675; color: white; border: none; width: 35px; height: 35px;
+      border-radius: 50%; font-weight: bold; cursor: pointer;
+    }
+
+    .modal-body { overflow-y: auto; padding: 5px; }
+
+    /* Shop Grid */
+    .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+
+    .theme-item {
+      background: #f1f2f6; padding: 15px; border-radius: 15px; text-align: center;
+      border: 3px solid transparent; transition: 0.2s;
+    }
+    .theme-item.active { border-color: #00b894; background: #e0fcf6; }
+
+    .theme-icon { font-size: 2.5rem; margin-bottom: 5px; display: block; }
+    .theme-name { font-weight: 700; color: #636e72; font-size: 1rem; display: block; margin-bottom: 8px;}
+
+    .price-btn {
+      width: 100%; padding: 8px; border-radius: 10px; border: none;
+      font-weight: 700; color: white; cursor: pointer; font-size: 0.9rem;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+    }
+    .price-btn:active { transform: translateY(4px); box-shadow: none; }
+    .btn-buy { background: #b2bec3; } /* Default gray if cant buy */
+    .btn-buy.can-buy { background: #feca57; color: #2d3436; }
+    .btn-equip { background: #0984e3; }
+    .btn-equipped { background: #00b894; cursor: default; box-shadow: none; }
+
+    /* Age Input */
+    .age-input-group {
+      display: flex; justify-content: center; gap: 10px; margin-top: 20px;
+    }
+    .age-input-group input {
+      width: 80px; font-size: 2rem; text-align: center; border: 3px solid #74b9ff;
+      border-radius: 15px; font-weight: bold;
+    }
+    .save-btn {
+      background: #00b894; color: white; border: none; padding: 0 20px;
+      border-radius: 15px; font-weight: bold; cursor: pointer;
+      box-shadow: 0 4px 0 #009432;
+    }
+    .save-btn:active { transform: translateY(4px); box-shadow: none; }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popUp { from { transform: scale(0.8); } to { transform: scale(1); } }
+    .shake { animation: shake 0.4s; }
+    @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
+
+    /* Feedback Overlay */
+    #feedback-overlay {
+      position: absolute; top:0; left:0; width:100%; height:100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8rem; z-index: 50; pointer-events: none; opacity: 0;
+    }
+    .correct-anim { animation: zoomFadeGreen 0.6s ease-out forwards; }
+    .wrong-anim { animation: zoomFadeRed 0.6s ease-out forwards; }
+
+    @keyframes zoomFadeGreen { 0%{opacity:0; transform:scale(0.5); color:#00b894;} 50%{opacity:1; transform:scale(1.2);} 100%{opacity:0; transform:scale(1.5);} }
+    @keyframes zoomFadeRed { 0%{opacity:0; transform:scale(0.5); color:#ff7675;} 50%{opacity:1; transform:scale(1.2);} 100%{opacity:0; transform:scale(1.5);} }
+
+  </style>
+</head>
+<body>
+
+<div id="live-bg"></div>
+<canvas id="confetti"></canvas>
+
+<div class="app">
+  
+  <!-- SPLASH SCREEN -->
+  <div id="splash-screen">
+    <div class="mascot">🧠</div>
+    <h1>Quick Brain</h1>
+    <p style="color:white; font-size:1.2rem; opacity:0.9;">Fun Math Challenge!</p>
+    <button class="btn-main" id="playBtn">PLAY</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen">
+    
+    <!-- Header -->
+    <div class="top-header">
+      <div class="stats-box">
+        <div class="badge"><i class="fas fa-coins"></i> <span id="points">0</span></div>
+        <div class="badge"><i class="fas fa-fire" style="color:#ff7675"></i> <span id="streak">0</span></div>
+      </div>
+      <div class="stats-box">
+        <button class="menu-btn" onclick="openModal('shop')"><i class="fas fa-store"></i></button>
+        <button class="menu-btn" onclick="openModal('settings')"><i class="fas fa-cog"></i></button>
+      </div>
+    </div>
+
+    <!-- Feedback Icon (Check/Cross) -->
+    <div id="feedback-overlay"></div>
+
+    <!-- Quiz Card -->
+    <div class="quiz-container" id="quizCard">
+      <div class="question-display" id="questionText">
+        <!-- Question goes here -->
+      </div>
+      <div class="input-area">
+        <input type="number" id="answerInput" placeholder="?" inputmode="numeric">
+        <button id="submitBtn"><i class="fas fa-check"></i></button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: SHOP -->
+  <div class="modal-backdrop" id="modal-shop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Theme Shop 🛒</div>
+        <button class="close-btn" onclick="closeModal('shop')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="shop-grid" id="shopGrid">
+          <!-- Items generated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SETTINGS/WELCOME -->
+  <div class="modal-backdrop" id="modal-settings">
+    <div class="modal-card" style="height:auto;">
+      <div class="modal-header">
+        <div class="modal-title">Settings ⚙️</div>
+        <button class="close-btn" onclick="closeModal('settings')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body" style="text-align:center; padding: 20px 0;">
+        <p style="font-size:1.4rem; color:#636e72;">How old are you?</p>
+        <div class="age-input-group">
+          <input type="number" id="ageInput" value="8" min="4" max="99">
+          <button class="save-btn" id="saveAgeBtn">SAVE</button>
+        </div>
+        <p style="margin-top:15px; font-size:0.9rem; color:#b2bec3;">Questions will adjust to your age.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    // --- CONFIG & STATE ---
+    const THEMES = [
+      { id: 'default', name: 'Sunny Day', icon: '☀️', price: 0, bg: '#74b9ff', particles: ['☁️','☀️'] },
+      { id: 'ocean',   name: 'Blue Ocean', icon: '🐳', price: 50, bg: '#48dbfb', particles: ['🐟','🫧'] },
+      { id: 'forest',  name: 'Green Forest', icon: '🌳', price: 100, bg: '#55efc4', particles: ['🍃','🐞'] },
+      { id: 'candy',   name: 'Candy Land', icon: '🍭', price: 200, bg: '#fda7df', particles: ['🍬','🍩'] },
+      { id: 'dino',    name: 'Jurassic',   icon: '🦖', price: 500, bg: '#f39c12', particles: ['🦖','🌋','🦕'] }, /* Premium */
+      { id: 'space',   name: 'Galaxy',     icon: '🚀', price: 600, bg: '#2d3436', particles: ['🛸','⭐','🪐'] }  /* Premium */
+    ];
+
+    let state = {
+      age: localStorage.getItem('qb_age') || null,
+      points: parseInt(localStorage.getItem('qb_points')) || 0,
+      owned: JSON.parse(localStorage.getItem('qb_owned')) || ['default'],
+      equipped: localStorage.getItem('qb_equipped') || 'default',
+      streak: 0,
+      q: {} // current question
+    };
+
+    // --- AUDIO ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(type) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      
+      const now = audioCtx.currentTime;
+      if (type === 'win') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now); osc.stop(now + 0.4);
+      } else if (type === 'lose') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now); osc.stop(now + 0.3);
+      } else {
+        // Pop click
+        osc.frequency.setValueAtTime(400, now);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now); osc.stop(now + 0.1);
+      }
+    }
+
+    // --- UI HELPERS ---
+    const getEl = (id) => document.getElementById(id);
+    
+    function updateStats() {
+      getEl('points').innerText = state.points;
+      getEl('streak').innerText = state.streak;
+      localStorage.setItem('qb_points', state.points);
+    }
+
+    function applyTheme(id) {
+      const t = THEMES.find(x => x.id === id) || THEMES[0];
+      document.body.style.backgroundColor = t.bg;
+      
+      // Update Particles
+      const bg = getEl('live-bg');
+      bg.innerHTML = '';
+      for(let i=0; i<15; i++) {
+        let p = document.createElement('div');
+        p.className = 'particle';
+        p.innerText = t.particles[Math.floor(Math.random()*t.particles.length)];
+        p.style.left = Math.random()*100 + '%';
+        p.style.animationDuration = (10 + Math.random()*10) + 's';
+        p.style.animationDelay = -Math.random()*20 + 's';
+        bg.appendChild(p);
+      }
+    }
+
+    // --- GAME LOGIC ---
+    function generateQuestion() {
+      let n1, n2, op, ans;
+      let age = parseInt(state.age) || 8;
+
+      if(age <= 6) {
+        n1 = r(10); n2 = r(5); op = '+'; ans = n1+n2;
+      } else if(age <= 9) {
+        if(Math.random()>0.5) { n1=r(20)+5; n2=r(10); op='+'; ans=n1+n2; }
+        else { n1=r(20)+5; n2=r(n1-1); op='-'; ans=n1-n2; }
+      } else {
+        let mode = Math.random();
+        if(mode < 0.4) { n1=r(50)+10; n2=r(40); op='+'; ans=n1+n2; }
+        else if(mode < 0.7) { n1=r(12); n2=r(10); op='×'; ans=n1*n2; }
+        else { n2=r(9)+2; ans=r(10)+1; n1=n2*ans; op='÷'; }
+      }
+      state.q = { text: `${n1} ${op} ${n2} = ?`, ans: ans };
+      
+      // Render Whiteboard style with Colors
+      getEl('questionText').innerHTML = `
+        <span style="color:#0984e3">${n1}</span>
+        <span style="color:#636e72; margin:0 10px">${op}</span>
+        <span style="color:#d63031">${n2}</span>
+        <span style="color:#636e72; margin:0 10px">=</span>
+        <span style="color:#6c5ce7">?</span>
+      `;
+    }
+    const r = (n) => Math.floor(Math.random()*n)+1;
+
+    function handleAnswer() {
+      const inp = getEl('answerInput');
+      const val = parseInt(inp.value);
+      if(isNaN(val)) return;
+
+      if(val === state.q.ans) {
+        // Correct
+        playTone('win');
+        state.streak++;
+        let bonus = Math.floor(state.streak/3) * 5;
+        state.points += (10 + bonus);
+        updateStats();
+        
+        // Visuals
+        showFeedback('correct');
+        fireConfetti();
+        renderShop(); // Refresh shop buttons incase now affordable
+        
+        setTimeout(() => {
+          inp.value = '';
+          generateQuestion();
+          inp.focus();
+        }, 800);
+      } else {
+        // Wrong
+        playTone('lose');
+        state.streak = 0;
+        updateStats();
+        
+        // Visuals
+        getEl('quizCard').classList.add('shake');
+        setTimeout(()=>getEl('quizCard').classList.remove('shake'), 400);
+        showFeedback('wrong');
+        
+        // preserved logic (Alert + Links - disabled for cleaner app flow, but logic preserved)
+        setTimeout(() => {
+          inp.value = '';
+          inp.focus();
+          alert("Try again!"); 
+        }, 500);
+      }
+    }
+
+    function showFeedback(type) {
+      const ol = getEl('feedback-overlay');
+      ol.className = '';
+      ol.innerHTML = type === 'correct' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>';
+      ol.classList.add(type === 'correct' ? 'correct-anim' : 'wrong-anim');
+    }
+
+    // --- MODAL & SHOP LOGIC ---
+    window.openModal = (id) => {
+      playTone();
+      getEl('modal-'+id).classList.add('active');
+      if(id === 'shop') renderShop();
+    };
+    window.closeModal = (id) => {
+      playTone();
+      getEl('modal-'+id).classList.remove('active');
+    };
+
+    function renderShop() {
+      const grid = getEl('shopGrid');
+      grid.innerHTML = '';
+      
+      THEMES.forEach(t => {
+        const owned = state.owned.includes(t.id);
+        const equipped = state.equipped === t.id;
+        const canBuy = state.points >= t.price;
+        
+        let btnHTML = '';
+        if(equipped) {
+          btnHTML = `<button class="price-btn btn-equipped"><i class="fas fa-check"></i> USED</button>`;
+        } else if(owned) {
+          btnHTML = `<button class="price-btn btn-equip" onclick="equip('${t.id}')">EQUIP</button>`;
+        } else {
+          btnHTML = `<button class="price-btn btn-buy ${canBuy?'can-buy':''}" onclick="buy('${t.id}', ${t.price})" ${!canBuy?'disabled':''}>
+            <i class="fas fa-coins"></i> ${t.price}
+          </button>`;
+        }
+
+        const div = document.createElement('div');
+        div.className = `theme-item ${equipped ? 'active' : ''}`;
+        div.innerHTML = `
+          <span class="theme-icon">${t.icon}</span>
+          <span class="theme-name">${t.name}</span>
+          ${btnHTML}
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    window.buy = (id, price) => {
+      if(state.points >= price) {
+        playTone('win');
+        state.points -= price;
+        state.owned.push(id);
+        localStorage.setItem('qb_points', state.points);
+        localStorage.setItem('qb_owned', JSON.stringify(state.owned));
+        window.equip(id); // Auto equip
+      }
+    };
+
+    window.equip = (id) => {
+      playTone();
+      state.equipped = id;
+      localStorage.setItem('qb_equipped', id);
+      applyTheme(id);
+      renderShop();
+    };
+
+    // --- INIT ---
+    getEl('playBtn').onclick = () => {
+      playTone();
+      if(!state.age) {
+        window.openModal('settings');
+      } else {
+        startGame();
+      }
+    };
+
+    getEl('saveAgeBtn').onclick = () => {
+      playTone();
+      let a = parseInt(getEl('ageInput').value);
+      if(a >= 4 && a <= 99) {
+        state.age = a;
+        localStorage.setItem('qb_age', a);
+        window.closeModal('settings');
+        startGame();
+      }
+    };
+    
+    // Bind Enter Key
+    getEl('answerInput').onkeypress = (e) => { if(e.key === 'Enter') handleAnswer(); };
+    getEl('submitBtn').onclick = handleAnswer;
+
+    function startGame() {
+      getEl('splash-screen').style.display = 'none';
+      getEl('game-screen').style.display = 'flex';
+      updateStats();
+      generateQuestion();
+      applyTheme(state.equipped);
+    }
+    
+    // Confetti Engine
+    const canvas = getEl('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    let particles = [];
+    function fireConfetti() {
+      particles = [];
+      for(let i=0; i<60; i++) {
+        particles.push({
+          x: canvas.width/2, y: canvas.height/2,
+          dx: (Math.random()-0.5)*15, dy: (Math.random()-1)*15,
+          color: `hsl(${Math.random()*360}, 100%, 50%)`,
+          life: 100
+        });
+      }
+      loopConfetti();
+    }
+    function loopConfetti() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach((p,i) => {
+        p.x+=p.dx; p.y+=p.dy; p.dy+=0.5; p.life--;
+        ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fill();
+        if(p.life<=0) particles.splice(i,1);
+      });
+      if(particles.length) requestAnimationFrame(loopConfetti);
+    }
+    
+    // Pre-load theme
+    applyTheme(state.equipped);
+
+  })();
+</script>
+</body>
+</html>
